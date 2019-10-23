@@ -14,10 +14,21 @@ function shippingRatesJson() {
     };
 }
 
+// Return the same list of SKUs with a quantity of 9999 for each SKU
+function getInventory(skus) {
+    let inventoryJson = {};
+    const skusArray = skus.slice(1, -1).split(',');
+    for (const sku of skusArray) {
+        inventoryJson[sku.slice(1, -1)] = 9999.00;
+    }
+    return inventoryJson;
+}
+
 express()
     .use(express.static(path.join(__dirname, 'public')))
     .set('views', path.join(__dirname, 'views'))
     .set('view engine', 'ejs')
     .get('/', (req, res) => res.render('pages/index'))
     .get('/calculate-shipping-rates', (req, res) => res.json(shippingRatesJson()))
+    .get('/get-inventory', (req, res) => res.json(getInventory(req.query.skus)))
     .listen(PORT, () => console.log(`Listening on ${ PORT }`));
