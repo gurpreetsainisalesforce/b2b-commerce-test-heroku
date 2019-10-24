@@ -24,6 +24,16 @@ function getInventory(skus) {
     return inventoryJson;
 }
 
+// Return the same list of SKUs with the same sale price (0.00) for each SKU
+function getSalesPrices(skus) {
+    let inventoryJson = {};
+    const skusArray = skus.slice(1, -1).split(',');
+    for (const sku of skusArray) {
+        inventoryJson[sku.slice(1, -1)] = 0.00;
+    }
+    return inventoryJson;
+}
+
 express()
     .use(express.static(path.join(__dirname, 'public')))
     .set('views', path.join(__dirname, 'views'))
@@ -31,4 +41,5 @@ express()
     .get('/', (req, res) => res.render('pages/index'))
     .get('/calculate-shipping-rates', (req, res) => res.json(shippingRatesJson()))
     .get('/get-inventory', (req, res) => res.json(getInventory(req.query.skus)))
+    .get('/get-sales-prices', (req, res) => res.json(getSalesPrices(req.query.skus)))
     .listen(PORT, () => console.log(`Listening on ${ PORT }`));
