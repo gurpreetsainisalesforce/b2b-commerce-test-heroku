@@ -34,12 +34,19 @@ function getSalesPrices(skus) {
     return json;
 }
 
-// Return the same list of SKUs with the tax rate 0.08 for each SKU
-function getTaxRates(skus) {
+// Return the same list of SKUs with the calculated tax amount and the tax rate 0.08 for each SKU
+function getTaxRates(amountsBySKU) {
     let json = {};
-    const skusArray = skus.slice(1, -1).split(',');
-    for (const sku of skusArray) {
-        json[sku.slice(1, -1)] = 0.08;
+    const skusArray = amountsBySKU.slice(1, -1).split(',');
+    for (const skuAndAmount of skusArray) {
+        const sku = skuAndAmount.split(':')[0];
+        const amount = skuAndAmount.split(':')[1];
+        const taxRate = 0.08;
+        const taxAmount = amount * taxRate;
+        json[sku.slice(1, -1)] = {
+            taxAmount: taxAmount,
+            taxRate: taxRate
+        };
     }
     return json;
 }
@@ -52,5 +59,5 @@ express()
     .get('/calculate-shipping-rates', (req, res) => res.json(shippingRatesJson()))
     .get('/get-inventory', (req, res) => res.json(getInventory(req.query.skus)))
     .get('/get-sales-prices', (req, res) => res.json(getSalesPrices(req.query.skus)))
-    .get('/get-tax-rates', (req, res) => res.json(getTaxRates(req.query.skus)))
+    .get('/get-tax-rates', (req, res) => res.json(getTaxRates(req.query.amountsBySKU)))
     .listen(PORT, () => console.log(`Listening on ${ PORT }`));
