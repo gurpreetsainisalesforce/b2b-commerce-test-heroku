@@ -45,7 +45,8 @@ function getTaxRates(amountsBySKU) {
         const taxAmount = amount * taxRate;
         json[sku.slice(1, -1)] = {
             taxAmount: taxAmount,
-            taxRate: taxRate
+            taxRate: taxRate,
+            taxName: 'GST'
         };
     }
     return json;
