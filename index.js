@@ -29,7 +29,12 @@ function getSalesPrices(skus) {
     let json = {};
     const skusArray = skus.slice(1, -1).split(',');
     for (const sku of skusArray) {
-        json[sku.slice(1, -1)] = 0.00;
+        const simpleSku = sku.slice(1, -1);
+        if (simpleSku == 'SKU_FOR_TEST') {
+            json[simpleSku] = 100.00;
+        } else {
+            json[simpleSku] = 0.00;
+        }
     }
     return json;
 }
