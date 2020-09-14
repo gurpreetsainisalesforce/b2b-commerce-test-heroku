@@ -14,6 +14,32 @@ function shippingRatesJson() {
     };
 }
 
+// return 2 shipping rates
+function shippingRates228Json() {
+    return [
+        {
+          "status": "calculated",
+          "rate": {
+            "name" : "Delivery Method 1",
+            "serviceName": "Test Carrier 1", 
+            "serviceCode": "SNC9600", 
+            "shipmentCost": 11.99,
+            "otherCost": 5.99
+          }
+        },
+        {
+          "status": "calculated",
+          "rate": {
+            "name": "Delivery Method 2",
+            "serviceName": "Test Carrier 2",
+            "serviceCode": "SNC9600",
+            "shipmentCost": 15.99,
+            "otherCost": 6.99
+          }
+        }
+      ];
+}
+
 // Return the same list of SKUs with a quantity of 9999 for each SKU
 function getInventory(skus) {
     let inventoryJson = {};
@@ -63,6 +89,7 @@ express()
     .set('view engine', 'ejs')
     .get('/', (req, res) => res.render('pages/index'))
     .get('/calculate-shipping-rates', (req, res) => res.json(shippingRatesJson()))
+    .get('/calculate-shipping-rates-228', (req, res) => res.json(shippingRates228Json()))
     .get('/get-inventory', (req, res) => res.json(getInventory(req.query.skus)))
     .get('/get-sales-prices', (req, res) => res.json(getSalesPrices(req.query.skus)))
     .get('/get-tax-rates', (req, res) => res.json(getTaxRates(req.query.amountsBySKU)))
