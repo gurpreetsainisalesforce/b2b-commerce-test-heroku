@@ -2,11 +2,50 @@ const express = require('express')
 const path = require('path')
 const PORT = process.env.PORT || 5000
 
+const en_US_SERVICE_NAME = 'Canada Post';
+const de_SERVICE_NAME = 'Kanada Post';
+const ja_SERVICE_NAME = 'カナダ郵便公社';
+
+const en_US_DELIVERY_METHOD_1 = 'Delivery Method 1';
+const de_DELIVERY_METHOD_1 = 'Liefermethode 1';
+const ja_DELIVERY_METHOD_1 = '配送方法1';
+
+const en_US_DELIVERY_METHOD_2 = 'Delivery Method 2';
+const de_DELIVERY_METHOD_2 = 'Liefermethode 2';
+const ja_DELIVERY_METHOD_2 = '配送方法2';
+
+const en_US_SERVICE_NAME_1 = 'Test Carrier 1';
+const de_SERVICE_NAME_1 = 'Testträger 1';
+const ja_SERVICE_NAME_1 = 'テストキャリア1';
+
+const en_US_SERVICE_NAME_2 = 'Test Carrier 2';
+const de_SERVICE_NAME_2 = 'Testträger 2';
+const ja_SERVICE_NAME_2 = 'テストキャリア2';
+
 function shippingRatesJson() {
     return {
         status: 'calculated',
         rate: {
             serviceName: 'Canada Post',
+            serviceCode: 'SNC9600',
+            shipmentCost: 11.99,
+            otherCost: 5.99
+        }
+    };
+}
+
+function shippingRatesJson(lang) {
+    let serviceName = en_US_SERVICE_NAME;
+    if(lang == 'de') {
+        serviceName = de_SERVICE_NAME;
+    } else if(lang == 'ja') {
+        serviceName = ja_SERVICE_NAME;
+    }
+
+    return {
+        status: 'calculated',
+        rate: {
+            serviceName: serviceName,
             serviceCode: 'SNC9600',
             shipmentCost: 11.99,
             otherCost: 5.99
@@ -32,6 +71,47 @@ function shippingRates228Json() {
           "rate": {
             "name": "Delivery Method 2",
             "serviceName": "Test Carrier 2",
+            "serviceCode": "SNC9600",
+            "shipmentCost": 15.99,
+            "otherCost": 6.99
+          }
+        }
+      ];
+}
+
+// return 2 shipping rates
+function shippingRates228Json(lang) {
+    let deliveryMethod1 = en_US_DELIVERY_METHOD_1;
+    let serviceName1 = en_US_SERVICE_NAME_1;
+    let deliveryMethod2 = en_US_DELIVERY_METHOD_2;
+    let serviceName2 = en_US_SERVICE_NAME_2;
+    if(lang == 'de') {
+        deliveryMethod1 = de_DELIVERY_METHOD_1;
+        serviceName1 = de_SERVICE_NAME_1;
+        deliveryMethod2 = de_DELIVERY_METHOD_2;
+        serviceName2 = de_SERVICE_NAME_2;
+    } else if(lang == 'ja') {
+        deliveryMethod1 = ja_DELIVERY_METHOD_1;
+        serviceName1 = ja_SERVICE_NAME_1;
+        deliveryMethod2 = ja_DELIVERY_METHOD_2;
+        serviceName2 = ja_SERVICE_NAME_2;
+    }
+    return [
+        {
+          "status": "calculated",
+          "rate": {
+            "name" : deliveryMethod1,
+            "serviceName": serviceName1, 
+            "serviceCode": "SNC9600", 
+            "shipmentCost": 11.99,
+            "otherCost": 5.99
+          }
+        },
+        {
+          "status": "calculated",
+          "rate": {
+            "name": deliveryMethod2,
+            "serviceName": serviceName2,
             "serviceCode": "SNC9600",
             "shipmentCost": 15.99,
             "otherCost": 6.99
@@ -177,7 +257,9 @@ express()
     .set('view engine', 'ejs')
     .get('/', (req, res) => res.render('pages/index'))
     .get('/calculate-shipping-rates', (req, res) => res.json(shippingRatesJson()))
+    .get('/calculate-shipping-rates-with-lang', (req, res) => res.json(shippingRatesJson(req.query.lang)))
     .get('/calculate-shipping-rates-winter-21', (req, res) => res.json(shippingRates228Json()))
+    .get('/calculate-shipping-rates-winter-21-with-lang', (req, res) => res.json(shippingRates228Json(req.query.lang)))
     .get('/get-inventory', (req, res) => res.json(getInventory(req.query.skus)))
     .get('/get-sales-prices', (req, res) => res.json(getSalesPrices(req.query.skus)))
     .get('/get-tax-rates', (req, res) => res.json(getTaxRates(req.query.amountsBySKU)))
