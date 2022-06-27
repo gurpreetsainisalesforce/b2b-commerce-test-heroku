@@ -190,14 +190,13 @@ function getTaxRatesByTaxType(amountsBySKU, taxType) {
 function getTaxRatesWithAdjustments(amountsBySKU, country, state, taxType) {
     var taxRate = 0.15;
     let json = {};
-    const jsonObject = JSON.parse(amountsBySKU);
-    for (var key in jsonObject) {
-        const cartItemId = jsonObject[key].cartItemId;
-        const sku = jsonObject[key].sku;
-        const amount = jsonObject[key].amount;
-        const tierAdjustment = jsonObject[key].tierAdj;
-        const itemizedPromotions = jsonObject[key].itemizedPromos;
-        const quantity = jsonObject[key].quantity;
+    for (var key in amountsBySKU) {
+        const cartItemId = amountsBySKU[key].cartItemId;
+        const sku = amountsBySKU[key].sku;
+        const amount = amountsBySKU[key].amount;
+        const tierAdjustment = amountsBySKU[key].tierAdj;
+        const itemizedPromotions = amountsBySKU[key].itemizedPromos;
+        const quantity = amountsBySKU[key].quantity;
     
         if(country == 'US') {
             taxRate = 0.08;
@@ -255,6 +254,7 @@ express()
     .use(express.static(path.join(__dirname, 'public')))
     .set('views', path.join(__dirname, 'views'))
     .set('view engine', 'ejs')
+    .use(express.json())
     .get('/', (req, res) => res.render('pages/index'))
     .get('/calculate-shipping-rates', (req, res) => res.json(shippingRatesJson()))
     .get('/calculate-shipping-rates-with-lang', (req, res) => res.json(shippingRatesJson(req.query.lang)))
@@ -264,5 +264,6 @@ express()
     .get('/get-sales-prices', (req, res) => res.json(getSalesPrices(req.query.skus)))
     .get('/get-tax-rates', (req, res) => res.json(getTaxRates(req.query.amountsBySKU)))
     .get('/get-tax-rates-by-tax-type', (req, res) => res.json(getTaxRatesByTaxType(req.query.amountsBySKU, req.query.taxType)))
-    .get('/get-tax-rates-with-adjustments', (req, res) => res.json(getTaxRatesWithAdjustments(req.query.amountsBySKU, req.query.country, req.query.state, req.query.taxType)))
+    .get('/get-tax-rates-with-adjustments', (req, res) => res.json(getTaxRatesWithAdjustments(JSON.parse(req.query.amountsBySKU), req.query.country, req.query.state, req.query.taxType)))
+    .post('/get-tax-rates-with-adjustments', (req, res) => res.json(getTaxRatesWithAdjustments(req.body.amountsBySKU, req.body.country, req.body.state, req.body.taxType)))
     .listen(PORT, () => console.log(`Listening on ${ PORT }`));
