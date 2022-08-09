@@ -122,6 +122,11 @@ function shippingRates228Json(lang) {
 
 // Return the same list of SKUs with a quantity of 9999 for each SKU
 function getInventory(skus) {
+    if (skus == null) {
+        return {
+            "error": "Input SKUs list is empty or undefined."
+        };
+    }
     let inventoryJson = {};
     const skusArray = skus.slice(1, -1).split(',');
     for (const sku of skusArray) {
@@ -132,6 +137,11 @@ function getInventory(skus) {
 
 // Return the same list of SKUs with the same sale price (0.00) for each SKU
 function getSalesPrices(skus) {
+    if (skus == null) {
+        return {
+            "error": "Input SKUs list is empty or undefined."
+        };
+    }
     let json = {};
     const skusArray = skus.slice(1, -1).split(',');
     for (const sku of skusArray) {
@@ -147,6 +157,11 @@ function getSalesPrices(skus) {
 
 // Return the same list of SKUs with the calculated tax amount and the tax rate 0.08 for each SKU
 function getTaxRates(amountsBySKU) {
+    if (amountsBySKU == null) {
+        return {
+            "error": "Input SKUs list is empty or undefined."
+        };
+    }
     let json = {};
     const skusArray = amountsBySKU.slice(1, -1).split(',');
     for (const skuAndAmount of skusArray) {
@@ -165,6 +180,11 @@ function getTaxRates(amountsBySKU) {
 
 // Return the same list of SKUs with the calculated tax amount and the tax rate 0.08 for each SKU
 function getTaxRatesByTaxType(amountsBySKU, taxType) {
+    if (amountsBySKU == null) {
+        return {
+            "error": "Input SKUs list is empty or undefined."
+        };
+    }
     let json = {};
     const skusArray = amountsBySKU.slice(1, -1).split(',');
     for (const skuAndAmount of skusArray) {
@@ -188,15 +208,21 @@ function getTaxRatesByTaxType(amountsBySKU, taxType) {
 
 // Tax Rate for Non-US Countries will be 0.15 and for US it will be 0.08
 function getTaxRatesWithAdjustments(amountsBySKU, country, state, taxType) {
+    if (amountsBySKU == null) {
+        return {
+            "error": "Input SKUs list is empty or undefined."
+        };
+    }
+    var skus = JSON.parse(amountsBySKU);
     var taxRate = 0.15;
     let json = {};
-    for (var key in amountsBySKU) {
-        const cartItemId = amountsBySKU[key].cartItemId;
-        const sku = amountsBySKU[key].sku;
-        const amount = amountsBySKU[key].amount;
-        const tierAdjustment = amountsBySKU[key].tierAdj;
-        const itemizedPromotions = amountsBySKU[key].itemizedPromos;
-        const quantity = amountsBySKU[key].quantity;
+    for (var key in skus) {
+        const cartItemId = skus[key].cartItemId;
+        const sku = skus[key].sku;
+        const amount = skus[key].amount;
+        const tierAdjustment = skus[key].tierAdj;
+        const itemizedPromotions = skus[key].itemizedPromos;
+        const quantity = skus[key].quantity;
     
         if(country == 'US') {
             taxRate = 0.08;
@@ -251,6 +277,11 @@ function getTaxRatesWithAdjustments(amountsBySKU, country, state, taxType) {
 }
 
 function getTaxRatesWithAdjustmentsPost(amountsBySKU, country, state, taxType) {
+    if (amountsBySKU == null) {
+        return {
+            "error": "Input SKUs list is empty or undefined."
+        };
+    }
     var taxRate = 0.15;
     let json = {};
     for (var key in amountsBySKU) {
@@ -329,6 +360,6 @@ express()
     .get('/get-sales-prices', (req, res) => res.json(getSalesPrices(req.query.skus)))
     .get('/get-tax-rates', (req, res) => res.json(getTaxRates(req.query.amountsBySKU)))
     .get('/get-tax-rates-by-tax-type', (req, res) => res.json(getTaxRatesByTaxType(req.query.amountsBySKU, req.query.taxType)))
-    .get('/get-tax-rates-with-adjustments', (req, res) => res.json(getTaxRatesWithAdjustments(JSON.parse(req.query.amountsBySKU), req.query.country, req.query.state, req.query.taxType)))
+    .get('/get-tax-rates-with-adjustments', (req, res) => res.json(getTaxRatesWithAdjustments(req.query.amountsBySKU, req.query.country, req.query.state, req.query.taxType)))
     .post('/get-tax-rates-with-adjustments-post', (req, res) => res.json(getTaxRatesWithAdjustmentsPost(req.body.amountsBySKU, req.body.country, req.body.state, req.body.taxType)))
     .listen(PORT, () => console.log(`Listening on ${ PORT }`));
